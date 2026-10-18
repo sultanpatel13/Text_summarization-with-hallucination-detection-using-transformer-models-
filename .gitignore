@@ -20,8 +20,10 @@ ENV/
 .env.*
 
 # Build and packaging
-build/
-dist/
+/build/
+/dist/
+frontend/dist/
+!static/dist/
 *.egg-info/
 
 # Model artifacts
@@ -47,3 +49,6 @@ desktop.ini
 # Temporary files
 *.tmp
 *.temp
+
+# anchor.md context folder
+anchor.md/

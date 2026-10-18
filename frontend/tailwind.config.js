@@ -1,5 +1,15 @@
 /** @type {import('tailwindcss').Config} */
+function withOpacity(variableName) {
+    return ({ opacityValue }) => {
+        if (opacityValue !== undefined) {
+            return `rgb(var(${variableName}) / ${opacityValue})`;
+        }
+        return `rgb(var(${variableName}))`;
+    };
+}
+
 export default {
+    darkMode: "class",
     content: ["./src/**/*.{js,jsx,ts,tsx}"],
     theme: {
         extend: {
@@ -8,30 +18,32 @@ export default {
                 mono: ["Geist Mono", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "monospace"],
             },
             colors: {
-                ink: "#171717",
-                "on-primary": "#ffffff",
-                body: "#4d4d4d",
-                mute: "#888888",
-                hairline: "#ebebeb",
-                "hairline-strong": "#a1a1a1",
-                canvas: "#ffffff",
-                "canvas-soft": "#fafafa",
-                "canvas-soft-2": "#f5f5f5",
-                link: "#0070f3",
-                "link-deep": "#0761d1",
-                "link-bg-soft": "#d3e5ff",
+                ink: withOpacity("--color-ink-rgb"),
+                "ink-muted": withOpacity("--color-mute-rgb"),
+                "on-primary": withOpacity("--color-on-primary-rgb"),
+                body: withOpacity("--color-body-rgb"),
+                mute: withOpacity("--color-mute-rgb"),
+                hairline: withOpacity("--color-hairline-rgb"),
+                "hairline-strong": withOpacity("--color-hairline-strong-rgb"),
+                canvas: withOpacity("--color-canvas-rgb"),
+                "canvas-soft": withOpacity("--color-canvas-soft-rgb"),
+                "canvas-soft-2": withOpacity("--color-canvas-soft-2-rgb"),
+                link: withOpacity("--color-link-rgb"),
+                "link-deep": withOpacity("--color-link-deep-rgb"),
+                "link-bg-soft": withOpacity("--color-link-bg-soft-rgb"),
                 success: "#0070f3",
                 error: "#ee0000",
-                "error-soft": "#f7d4d6",
+                "error-soft": withOpacity("--color-error-soft-rgb"),
+                "error-subtle": withOpacity("--color-error-soft-rgb"),
                 "error-deep": "#c50000",
                 warning: "#f5a623",
-                "warning-soft": "#ffefcf",
+                "warning-soft": withOpacity("--color-warning-soft-rgb"),
                 "warning-deep": "#ab570a",
                 violet: "#7928ca",
-                "violet-soft": "#d8ccf1",
+                "violet-soft": withOpacity("--color-violet-soft-rgb"),
                 "violet-deep": "#4c2889",
                 cyan: "#50e3c2",
-                "cyan-soft": "#aaffec",
+                "cyan-soft": withOpacity("--color-cyan-soft-rgb"),
                 "cyan-deep": "#29bc9b",
                 "highlight-pink": "#ff0080",
                 "highlight-magenta": "#eb367f",
@@ -67,15 +79,11 @@ export default {
                 section: "192px",
             },
             boxShadow: {
-                "elevation-1": "inset 0 0 0 1px rgba(0,0,0,0.08)",
-                "elevation-2":
-                    "0px 1px 1px rgba(0,0,0,0.02), 0px 2px 2px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(0,0,0,0.08)",
-                "elevation-3":
-                    "0px 2px 2px rgba(0,0,0,0.04), 0px 8px 8px -8px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(0,0,0,0.08)",
-                "elevation-4":
-                    "0px 2px 2px rgba(0,0,0,0.04), 0px 8px 16px -4px rgba(0,0,0,0.04), inset 0 0 0 1px rgba(0,0,0,0.08)",
-                "elevation-5":
-                    "0px 1px 1px rgba(0,0,0,0.02), 0px 8px 16px -4px rgba(0,0,0,0.04), 0px 24px 32px -8px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(0,0,0,0.08)",
+                "elevation-1": "var(--elevation-1)",
+                "elevation-2": "var(--elevation-2)",
+                "elevation-3": "var(--elevation-3)",
+                "elevation-4": "var(--elevation-4)",
+                "elevation-5": "var(--elevation-5)",
             },
             animation: {
                 blink: "blink 1s step-end infinite",
