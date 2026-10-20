@@ -1,19 +1,19 @@
 import os
+import time
 from pathlib import Path
+
 try:
-    import torch
-    if hasattr(torch, "set_num_threads"):
-        optimal_threads = min(8, max(1, (os.cpu_count() or 4) - 1))
-        torch.set_num_threads(optimal_threads)
-except Exception:
-    pass
+    from backend.device_utils import configure_torch_threads, get_device, get_device_info
+except ModuleNotFoundError:
+    from device_utils import configure_torch_threads, get_device, get_device_info
+
+configure_torch_threads()
 
 try:
     from backend.hallucination_detector import HallucinationDetector
 except ModuleNotFoundError:
     from hallucination_detector import HallucinationDetector
 from flask import Flask, jsonify, render_template, request
-import time
 try:
     from backend.analysis import analyze_text
     from backend.bart_model import BART_SUMMARIZER
@@ -35,6 +35,9 @@ app = Flask(
     template_folder=str(BASE_DIR / "templates"),
     static_folder=str(BASE_DIR / "static"),
 )
+
+dev_status = get_device_info()
+print(f"[App Startup] Active compute device: {dev_status['active_device'].upper()} (GPU available: {dev_status['cuda_available']})")
 
 print("Initializing Hallucination Detector (this might take a moment)...")
 hallucination_detector = HallucinationDetector()
@@ -139,6 +142,7 @@ def summarize():
         {
             "model_type": model_type,
             "preset": resolved_preset,
+            "device": get_device(),
             "overview": overview,
             "summary": summary,
             "source_file": file_name,
@@ -147,6 +151,13 @@ def summarize():
             "hallucination_analysis": None,
         }
     )
+
+
+@app.get("/api/device_info")
+@app.get("/device_info")
+def device_info():
+    """Diagnostic endpoint reporting active compute hardware (GPU / CPU)."""
+    return jsonify(get_device_info())
 
 
 @app.post("/analyze_hallucination")
@@ -178,6 +189,7 @@ def analyze_hallucination():
             hallucination_time,
             3
         )
+        hallucination_analysis["device"] = get_device()
     except Exception as error:
         print(
             f"Error during hallucination detection: {error}"
@@ -185,6 +197,7 @@ def analyze_hallucination():
         hallucination_analysis = {
             "error": "Failed to analyze hallucination",
             "details": str(error),
+            "device": get_device(),
         }
 
     return jsonify(hallucination_analysis)

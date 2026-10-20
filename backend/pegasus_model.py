@@ -17,6 +17,7 @@ try:
         count_tokens,
         fuse_chunk_summaries,
     )
+    from backend.device_utils import clear_device_cache, get_device, load_pretrained_safe
     from backend.hierarchical_summarizer import (
         calculate_word_budget,
         clean_and_filter_narrative,
@@ -32,6 +33,7 @@ except ModuleNotFoundError:
         count_tokens,
         fuse_chunk_summaries,
     )
+    from device_utils import clear_device_cache, get_device, load_pretrained_safe
     from hierarchical_summarizer import (
         calculate_word_budget,
         clean_and_filter_narrative,
@@ -77,6 +79,7 @@ class PegasusSummarizer:
     def __post_init__(self):
         self._tokenizer = None
         self._model = None
+        self._device = None
 
     def _load(self):
         if PegasusTokenizer is None or PegasusForConditionalGeneration is None:
@@ -85,8 +88,18 @@ class PegasusSummarizer:
             )
 
         if self._tokenizer is None or self._model is None:
-            self._tokenizer = PegasusTokenizer.from_pretrained(self.model_name, use_fast=False)
-            self._model = PegasusForConditionalGeneration.from_pretrained(self.model_name)
+            self._device = get_device()
+            self._tokenizer = load_pretrained_safe(PegasusTokenizer.from_pretrained, self.model_name, use_fast=False)
+            self._model = load_pretrained_safe(PegasusForConditionalGeneration.from_pretrained, self.model_name)
+            if self._device == "cuda":
+                try:
+                    self._model = self._model.to("cuda")
+                except Exception as err:
+                    print(f"[PEGASUS] Failed to move model to CUDA ({err}). Falling back to CPU.")
+                    self._device = "cpu"
+                    self._model = self._model.to("cpu")
+            else:
+                self._model = self._model.to("cpu")
             self._model.eval()
 
     def _clean(self, decoded: str) -> str:
@@ -95,6 +108,12 @@ class PegasusSummarizer:
         return " ".join(decoded.split()).strip()
 
     def _generate_single(self, chunk_text: str, min_length: int, max_length: int) -> str:
+        if torch is None:
+            raise RuntimeError("torch is required for PEGASUS inference.")
+
+        if self._device is None:
+            self._device = get_device()
+
         inputs = self._tokenizer(
             chunk_text,
             truncation=True,
@@ -102,16 +121,42 @@ class PegasusSummarizer:
             max_length=MODEL_MAX_TOKENS,
             return_tensors="pt",
         )
-        if torch is not None and torch.cuda.is_available():
-            self._model = self._model.to("cuda")
-            inputs = {key: value.to("cuda") for key, value in inputs.items()}
 
-        if torch is None:
-            raise RuntimeError("torch is required for PEGASUS inference.")
-        use_cuda = torch.cuda.is_available()
-        with torch.inference_mode():
-            if use_cuda:
-                with torch.autocast(device_type="cuda"):
+        try:
+            inputs = {key: value.to(self._device) for key, value in inputs.items()}
+            with torch.inference_mode():
+                if self._device == "cuda":
+                    with torch.autocast(device_type="cuda"):
+                        summary_ids = self._model.generate(
+                            **inputs,
+                            num_beams=4,
+                            min_length=min_length,
+                            max_length=max_length,
+                            length_penalty=1.2,
+                            no_repeat_ngram_size=3,
+                            early_stopping=True,
+                            use_cache=True,
+                        )
+                else:
+                    summary_ids = self._model.generate(
+                        **inputs,
+                        num_beams=4,
+                        min_length=min_length,
+                        max_length=max_length,
+                        length_penalty=1.2,
+                        no_repeat_ngram_size=3,
+                        early_stopping=True,
+                        use_cache=True,
+                    )
+        except Exception as err:
+            is_oom = "out of memory" in str(err).lower() or "cuda" in str(err).lower()
+            if self._device == "cuda" and is_oom:
+                print(f"[PEGASUS] GPU memory exceeded or CUDA error ({err}). Gracefully falling back to CPU.")
+                clear_device_cache("cuda")
+                self._device = "cpu"
+                self._model = self._model.to("cpu")
+                inputs = {key: value.to("cpu") for key, value in inputs.items()}
+                with torch.inference_mode():
                     summary_ids = self._model.generate(
                         **inputs,
                         num_beams=4,
@@ -123,16 +168,8 @@ class PegasusSummarizer:
                         use_cache=True,
                     )
             else:
-                summary_ids = self._model.generate(
-                    **inputs,
-                    num_beams=4,
-                    min_length=min_length,
-                    max_length=max_length,
-                    length_penalty=1.2,
-                    no_repeat_ngram_size=3,
-                    early_stopping=True,
-                    use_cache=True,
-                )
+                raise
+
         return self._clean(self._tokenizer.decode(summary_ids[0], skip_special_tokens=True))
 
     def summarize(self, text: str, summary_length: Union[int, str] = 3, preset: Optional[str] = None) -> str:

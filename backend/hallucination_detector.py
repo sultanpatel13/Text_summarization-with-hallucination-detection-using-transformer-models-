@@ -11,6 +11,11 @@ from transformers import (
     AutoTokenizer,
 )
 
+try:
+    from backend.device_utils import clear_device_cache, get_device, load_pretrained_safe
+except ModuleNotFoundError:
+    from device_utils import clear_device_cache, get_device, load_pretrained_safe
+
 
 class HallucinationDetector:
     """
@@ -34,16 +39,11 @@ class HallucinationDetector:
         retrieval_model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
         top_k: int = 3,
     ):
-        self.device = (
-            "cuda"
-            if torch.cuda.is_available()
-            else "cpu"
-        )
-
+        self.device = get_device()
         self.top_k = top_k
 
         print(
-            f"[Detector] Device: {self.device}"
+            f"[Detector] Compute device: {self.device.upper()}"
         )
 
         print(
@@ -51,17 +51,26 @@ class HallucinationDetector:
             f"{nli_model_name}"
         )
 
-        self.tokenizer = (
-            AutoTokenizer.from_pretrained(
-                nli_model_name
-            )
+        self.tokenizer = load_pretrained_safe(
+            AutoTokenizer.from_pretrained,
+            nli_model_name
         )
 
-        self.nli_model = (
-            AutoModelForSequenceClassification
-            .from_pretrained(nli_model_name)
-            .to(self.device)
-        )
+        try:
+            self.nli_model = load_pretrained_safe(
+                AutoModelForSequenceClassification.from_pretrained,
+                nli_model_name
+            ).to(self.device)
+        except Exception as err:
+            if self.device == "cuda":
+                print(f"[Detector] Failed to load NLI model to CUDA ({err}). Falling back to CPU.")
+                self.device = "cpu"
+                self.nli_model = load_pretrained_safe(
+                    AutoModelForSequenceClassification.from_pretrained,
+                    nli_model_name
+                ).to("cpu")
+            else:
+                raise
 
         self.nli_model.eval()
 
@@ -70,12 +79,23 @@ class HallucinationDetector:
             f"{retrieval_model_name}"
         )
 
-        self.retrieval_model = (
-            SentenceTransformer(
+        try:
+            self.retrieval_model = load_pretrained_safe(
+                SentenceTransformer,
                 retrieval_model_name,
                 device=self.device,
             )
-        )
+        except Exception as err:
+            if self.device == "cuda":
+                print(f"[Detector] Failed to load retrieval model to CUDA ({err}). Falling back to CPU.")
+                self.device = "cpu"
+                self.retrieval_model = load_pretrained_safe(
+                    SentenceTransformer,
+                    retrieval_model_name,
+                    device="cpu",
+                )
+            else:
+                raise
 
         self.label_map = self._build_label_map()
 
@@ -225,13 +245,29 @@ class HallucinationDetector:
                 max_length=512,
                 return_tensors="pt",
             )
-            inputs = {key: value.to(self.device) for key, value in inputs.items()}
 
-            with torch.inference_mode():
-                with torch.autocast(device_type=device_type):
-                    outputs = self.nli_model(**inputs)
-
-                probabilities = torch.softmax(outputs.logits, dim=-1)
+            try:
+                inputs = {key: value.to(self.device) for key, value in inputs.items()}
+                with torch.inference_mode():
+                    if self.device == "cuda":
+                        with torch.autocast(device_type="cuda"):
+                            outputs = self.nli_model(**inputs)
+                    else:
+                        outputs = self.nli_model(**inputs)
+                    probabilities = torch.softmax(outputs.logits, dim=-1)
+            except Exception as err:
+                is_oom = "out of memory" in str(err).lower() or "cuda" in str(err).lower()
+                if self.device == "cuda" and is_oom:
+                    print(f"[Detector] GPU memory exceeded or CUDA error ({err}). Falling back to CPU for NLI.")
+                    clear_device_cache("cuda")
+                    self.device = "cpu"
+                    self.nli_model = self.nli_model.to("cpu")
+                    inputs = {key: value.to("cpu") for key, value in inputs.items()}
+                    with torch.inference_mode():
+                        outputs = self.nli_model(**inputs)
+                        probabilities = torch.softmax(outputs.logits, dim=-1)
+                else:
+                    raise
 
             for probs in probabilities.cpu().tolist():
                 scores = {}
@@ -478,12 +514,28 @@ class HallucinationDetector:
         # Pre-compute source embeddings once for the document (O(S) instead of O(M * S))
         source_embeddings = None
         if source_sentences:
-            source_embeddings = self.retrieval_model.encode(
-                source_sentences,
-                normalize_embeddings=True,
-                batch_size=64,
-                show_progress_bar=False,
-            )
+            try:
+                source_embeddings = self.retrieval_model.encode(
+                    source_sentences,
+                    normalize_embeddings=True,
+                    batch_size=64,
+                    show_progress_bar=False,
+                )
+            except Exception as err:
+                is_oom = "out of memory" in str(err).lower() or "cuda" in str(err).lower()
+                if self.device == "cuda" and is_oom:
+                    print(f"[Detector] GPU memory exceeded during retrieval encoding ({err}). Falling back to CPU.")
+                    clear_device_cache("cuda")
+                    self.device = "cpu"
+                    self.retrieval_model = self.retrieval_model.to("cpu")
+                    source_embeddings = self.retrieval_model.encode(
+                        source_sentences,
+                        normalize_embeddings=True,
+                        batch_size=64,
+                        show_progress_bar=False,
+                    )
+                else:
+                    raise
 
         analyzed_sentences = []
 

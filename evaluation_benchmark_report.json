@@ -1,0 +1,458 @@
+{
+  "timestamp": "2026-10-20 10:00:00",
+  "hardware": "CPU (Intel/AMD)",
+  "nli_evaluation": {
+    "accuracy": 100.0,
+    "confusion_matrix": {
+      "ENTAILMENT": {
+        "ENTAILMENT": 7,
+        "CONTRADICTION": 0,
+        "UNVERIFIABLE": 0
+      },
+      "CONTRADICTION": {
+        "ENTAILMENT": 0,
+        "CONTRADICTION": 7,
+        "UNVERIFIABLE": 0
+      },
+      "UNVERIFIABLE": {
+        "ENTAILMENT": 0,
+        "CONTRADICTION": 0,
+        "UNVERIFIABLE": 6
+      }
+    },
+    "per_class_metrics": {
+      "ENTAILMENT": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "CONTRADICTION": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 7,
+        "fp": 0,
+        "fn": 0
+      },
+      "UNVERIFIABLE": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "tp": 6,
+        "fp": 0,
+        "fn": 0
+      }
+    },
+    "total_time": 4.6009470999997575,
+    "test_results": [
+      {
+        "id": 1,
+        "source": "The company was founded in 2010. It initially had 15 employees and developed accounting software for small businesses.",
+        "claim": "The company was established in 2010.",
+        "expected": "ENTAILMENT",
+        "predicted": "ENTAILMENT",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "The company was founded in 2010. It initially had 15 employees and developed accounting software for small businesses."
+      },
+      {
+        "id": 2,
+        "source": "Water freezes at 0\u00b0C under standard atmospheric pressure.",
+        "claim": "Water freezes at 0\u00b0C under standard atmospheric pressure.",
+        "expected": "ENTAILMENT",
+        "predicted": "ENTAILMENT",
+        "match": true,
+        "confidence": 0.9766,
+        "evidence": "Water freezes at 0\u00b0C under standard atmospheric pressure."
+      },
+      {
+        "id": 3,
+        "source": "Solar photovoltaic panels convert sunlight directly into electricity with zero greenhouse gas emissions during operation.",
+        "claim": "Solar panels produce electricity from sunlight without emitting greenhouse gases during use.",
+        "expected": "ENTAILMENT",
+        "predicted": "ENTAILMENT",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "Solar photovoltaic panels convert sunlight directly into electricity with zero greenhouse gas emissions during operation."
+      },
+      {
+        "id": 4,
+        "source": "Deep learning transformers utilize self-attention mechanisms to process input tokens in parallel.",
+        "claim": "Self-attention allows transformers to process input tokens concurrently.",
+        "expected": "ENTAILMENT",
+        "predicted": "ENTAILMENT",
+        "match": true,
+        "confidence": 0.9961,
+        "evidence": "Deep learning transformers utilize self-attention mechanisms to process input tokens in parallel."
+      },
+      {
+        "id": 5,
+        "source": "The hospital introduced a robotic surgery unit in January 2023 to assist with minimally invasive procedures.",
+        "claim": "In January 2023, the hospital implemented robotic systems for minimally invasive operations.",
+        "expected": "ENTAILMENT",
+        "predicted": "ENTAILMENT",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "The hospital introduced a robotic surgery unit in January 2023 to assist with minimally invasive procedures."
+      },
+      {
+        "id": 6,
+        "source": "Penicillin was discovered by Alexander Fleming in 1928 at St. Mary's Hospital in London.",
+        "claim": "Alexander Fleming discovered penicillin in 1928.",
+        "expected": "ENTAILMENT",
+        "predicted": "ENTAILMENT",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "Penicillin was discovered by Alexander Fleming in 1928 at St."
+      },
+      {
+        "id": 7,
+        "source": "Electric vehicles use lithium-ion battery packs to power high-efficiency electric motors.",
+        "claim": "Lithium-ion batteries supply power to electric motors in electric vehicles.",
+        "expected": "ENTAILMENT",
+        "predicted": "ENTAILMENT",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "Electric vehicles use lithium-ion battery packs to power high-efficiency electric motors."
+      },
+      {
+        "id": 8,
+        "source": "The company was founded in 2010.",
+        "claim": "The company was founded in 2018.",
+        "expected": "CONTRADICTION",
+        "predicted": "CONTRADICTION",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "The company was founded in 2010."
+      },
+      {
+        "id": 9,
+        "source": "A university launched a course in 2024.",
+        "claim": "The university launched the course in 2022.",
+        "expected": "CONTRADICTION",
+        "predicted": "CONTRADICTION",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "A university launched a course in 2024."
+      },
+      {
+        "id": 10,
+        "source": "Solar panels generate electricity during daylight hours and cannot generate power at night without battery storage.",
+        "claim": "Solar panels generate abundant power at midnight without needing storage.",
+        "expected": "CONTRADICTION",
+        "predicted": "CONTRADICTION",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "Solar panels generate electricity during daylight hours and cannot generate power at night without battery storage."
+      },
+      {
+        "id": 11,
+        "source": "The project's budget was strictly capped at $50,000 by the board.",
+        "claim": "The board granted an unlimited budget exceeding $2 million for the project.",
+        "expected": "CONTRADICTION",
+        "predicted": "CONTRADICTION",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "The project's budget was strictly capped at $50,000 by the board."
+      },
+      {
+        "id": 12,
+        "source": "The study included 100 adult participants aged between 25 and 40 years.",
+        "claim": "The research was conducted exclusively on 500 pediatric patients under 10 years old.",
+        "expected": "CONTRADICTION",
+        "predicted": "CONTRADICTION",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "The study included 100 adult participants aged between 25 and 40 years."
+      },
+      {
+        "id": 13,
+        "source": "The server cluster runs on Ubuntu Linux 22.04 LTS.",
+        "claim": "The server cluster operates exclusively on Windows Server 2003.",
+        "expected": "CONTRADICTION",
+        "predicted": "CONTRADICTION",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "The server cluster runs on Ubuntu Linux 22.04 LTS."
+      },
+      {
+        "id": 14,
+        "source": "Water boils at 100 degrees Celsius under standard atmospheric pressure.",
+        "claim": "Water boils at 20 degrees Celsius at sea level.",
+        "expected": "CONTRADICTION",
+        "predicted": "CONTRADICTION",
+        "match": true,
+        "confidence": 0.9961,
+        "evidence": "Water boils at 100 degrees Celsius under standard atmospheric pressure."
+      },
+      {
+        "id": 15,
+        "source": "The company develops accounting software for small businesses.",
+        "claim": "The company employs 500 people worldwide.",
+        "expected": "UNVERIFIABLE",
+        "predicted": "UNVERIFIABLE",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "The company develops accounting software for small businesses."
+      },
+      {
+        "id": 16,
+        "source": "The university introduced a new computer science course in 2024.",
+        "claim": "The course enrolled exactly 850 students from 30 different countries.",
+        "expected": "UNVERIFIABLE",
+        "predicted": "UNVERIFIABLE",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "The university introduced a new computer science course in 2024."
+      },
+      {
+        "id": 17,
+        "source": "BART is a transformer architecture combining bidirectional and autoregressive components.",
+        "claim": "BART was trained for precisely 42 days on 1,024 NVIDIA H100 GPUs.",
+        "expected": "UNVERIFIABLE",
+        "predicted": "UNVERIFIABLE",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "BART is a transformer architecture combining bidirectional and autoregressive components."
+      },
+      {
+        "id": 18,
+        "source": "The cafe serves organic coffee and artisan pastries.",
+        "claim": "The cafe generated $1.2 million in annual profit last year.",
+        "expected": "UNVERIFIABLE",
+        "predicted": "UNVERIFIABLE",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "The cafe serves organic coffee and artisan pastries."
+      },
+      {
+        "id": 19,
+        "source": "Renewable energy adoption grew rapidly across Europe between 2015 and 2023.",
+        "claim": "European solar panel manufacturers reduced their retail prices by exactly 43 percent in 2021.",
+        "expected": "UNVERIFIABLE",
+        "predicted": "UNVERIFIABLE",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "Renewable energy adoption grew rapidly across Europe between 2015 and 2023."
+      },
+      {
+        "id": 20,
+        "source": "Researchers evaluated five distinct natural language processing algorithms on the benchmark.",
+        "claim": "The researchers won the Best Paper Award at the NeurIPS conference for this work.",
+        "expected": "UNVERIFIABLE",
+        "predicted": "UNVERIFIABLE",
+        "match": true,
+        "confidence": 1.0,
+        "evidence": "Researchers evaluated five distinct natural language processing algorithms on the benchmark."
+      }
+    ]
+  },
+  "file_upload_evaluation": [
+    {
+      "case": "Valid TXT",
+      "success": true,
+      "extracted_len": 102
+    },
+    {
+      "case": "Valid DOCX",
+      "success": true,
+      "extracted_len": 93
+    },
+    {
+      "case": "Scanned/Blank PDF Handling",
+      "success": false,
+      "error": "No readable text was found in the uploaded file."
+    },
+    {
+      "case": "Empty File Rejection",
+      "success": true,
+      "note": "The uploaded file is empty."
+    },
+    {
+      "case": "Corrupted PDF Handling",
+      "success": true,
+      "error_caught": "EOF marker not found"
+    },
+    {
+      "case": "Unsupported Extension Handling",
+      "success": true,
+      "extracted_len": 5
+    }
+  ],
+  "long_document_evaluation": {
+    "word_count": 1082,
+    "token_count": 1319,
+    "num_chunks": 2,
+    "elapsed_sec": 105.73,
+    "summary": "Solaria Technologies was founded in Zurich in 2012 by Dr. Elena Ramos to pioneer clean energy storage solutions. In fiscal year 2025, Solaria achieved record revenues of 340 million euros with an operating margin of 18.5 percent. Supply bottlenecks in critical lithium imports and geopolitical tariffs increased raw component procurement overhead by 14 percent. The strategic roadmap plans to construct a gigafactory in Valencia by 2028 and expand commercial operations across Latin America. The company is based in Zurich, Switzerland, but has offices in Valencia, Barcelona, Madrid, and New York. It has a workforce of more than 2,000 people and employs more than 1,000 in Switzerland, Spain, and the U.S. It also has operations in Brazil, Argentina, Chile, Mexico, Argentina and the United States, and plans to expand its operations across the world by the end of the decade. For more information on Solaria Technologies, visit www.solaria.com and follow us on Twitter @SolariaTech and @SolariaInc. For confidential support, call the Samaritans on 08457 90 90 90, visit a local Samaritans branch or click here for details. For support in the UK, contact Samaritans on 08457 909090 or visit a local samaritans branch, or click here for more information. For information on how to get involved in the Solaria Foundation, visit www.solasia.org or click http://www.solaria.org/pages/get-involved-in-the-Solaria-Foundation or the Solaria Founder and Program and Programme and Program and get involved with the Solaria Institute in Zurich, Switzerland. For details on how you can get involved with Solaria, visit: www.Solaria.co.uk/getinvolved/Solaria/Get-involved in- the Foundation-and-Programs-and program and Programs in the Swiss Institution and in the U.S., visit: http://www soria.gov/get_involved/ Solaria/Start-up- &-Projects- & Programs/Solar-Tech-Start- & Program &-Schedule.html. For more information about Solaria and its partners, see: http:www. Solaria.",
+    "coverage": {
+      "Section 1 (Background: Solaria/Elena Ramos/2012)": true,
+      "Section 2 (Financials: 340 million/revenue)": true,
+      "Section 3 (Products: Helios-9/battery/solid-state)": false,
+      "Section 4 (Challenges: supply/tariffs/lithium)": true,
+      "Section 5 (Future Plans: gigafactory/Valencia/2028)": true
+    },
+    "coverage_ratio": "4/5"
+  },
+  "model_comparison": [
+    {
+      "topic": "Artificial Intelligence & Robotics",
+      "model": "BART",
+      "preset": "short",
+      "elapsed_sec": 6.01,
+      "summary_words": 30,
+      "budget_expected": "18-32",
+      "in_budget": true,
+      "rouge1": 0.5,
+      "rouge2": 0.2963,
+      "rougeL": 0.4643,
+      "summary": "Artificial intelligence is a branch of computer science that enables machines to perform tasks that typically require human intelligence. It includes machine learning, natural language processing, computer vision, and robotics."
+    },
+    {
+      "topic": "Artificial Intelligence & Robotics",
+      "model": "BART",
+      "preset": "medium",
+      "elapsed_sec": 7.35,
+      "summary_words": 40,
+      "budget_expected": "32-43",
+      "in_budget": true,
+      "rouge1": 0.5152,
+      "rouge2": 0.25,
+      "rougeL": 0.3939,
+      "summary": "Artificial intelligence is a branch of computer science that enables machines to perform tasks that typically require human intelligence. It includes machine learning, natural language processing, computer vision, and robotics. AI is used in healthcare, education, finance, transportation, and manufacturing."
+    },
+    {
+      "topic": "Artificial Intelligence & Robotics",
+      "model": "BART",
+      "preset": "long",
+      "elapsed_sec": 11.41,
+      "summary_words": 53,
+      "budget_expected": "54-58",
+      "in_budget": false,
+      "rouge1": 0.4304,
+      "rouge2": 0.2078,
+      "rougeL": 0.3291,
+      "summary": "Artificial intelligence is a branch of computer science that enables machines to perform tasks that typically require human intelligence. It includes machine learning, natural language processing, computer vision, and robotics. AI is used in healthcare, education, finance, transportation, and manufacturing. It helps automate repetitive tasks, analyze large amounts of data, and support decision-making."
+    },
+    {
+      "topic": "Artificial Intelligence & Robotics",
+      "model": "PEGASUS",
+      "preset": "short",
+      "elapsed_sec": 19.55,
+      "summary_words": 32,
+      "budget_expected": "18-32",
+      "in_budget": true,
+      "rouge1": 0.5172,
+      "rouge2": 0.3214,
+      "rougeL": 0.4483,
+      "summary": "Artificial intelligence is a branch of computer science that enables machines to perform tasks that typically require human intelligence . It includes machine learning, natural language processing, computer vision, and robotics ."
+    },
+    {
+      "topic": "Artificial Intelligence & Robotics",
+      "model": "PEGASUS",
+      "preset": "medium",
+      "elapsed_sec": 7.8,
+      "summary_words": 32,
+      "budget_expected": "32-43",
+      "in_budget": true,
+      "rouge1": 0.5172,
+      "rouge2": 0.3214,
+      "rougeL": 0.4483,
+      "summary": "Artificial intelligence is a branch of computer science that enables machines to perform tasks that typically require human intelligence . It includes machine learning, natural language processing, computer vision, and robotics ."
+    },
+    {
+      "topic": "Artificial Intelligence & Robotics",
+      "model": "PEGASUS",
+      "preset": "long",
+      "elapsed_sec": 14.54,
+      "summary_words": 58,
+      "budget_expected": "54-58",
+      "in_budget": true,
+      "rouge1": 0.4762,
+      "rouge2": 0.1951,
+      "rougeL": 0.3571,
+      "summary": "Artificial intelligence is a branch of computer science that enables machines to perform tasks that typically require human intelligence . It includes machine learning, natural language processing, computer vision, and robotics. Artificial intelligence is used in healthcare, education, finance, transportation, and manufacturing. Recent advancements in deep learning, particularly transformer neural architectures, have dramatically accelerated progress across translation, summarization"
+    },
+    {
+      "topic": "Renewable Energy Technologies",
+      "model": "BART",
+      "preset": "short",
+      "elapsed_sec": 7.32,
+      "summary_words": 36,
+      "budget_expected": "20-36",
+      "in_budget": true,
+      "rouge1": 0.2687,
+      "rouge2": 0.0615,
+      "rougeL": 0.1493,
+      "summary": "Renewable energy comes from natural sources that replenish over time. Solar energy uses sunlight to generate electricity, while wind energy converts the movement of air into electrical power. Hydropower uses flowing water, and geothermal energy uses"
+    },
+    {
+      "topic": "Renewable Energy Technologies",
+      "model": "BART",
+      "preset": "medium",
+      "elapsed_sec": 7.22,
+      "summary_words": 40,
+      "budget_expected": "36-48",
+      "in_budget": true,
+      "rouge1": 0.2535,
+      "rouge2": 0.058,
+      "rougeL": 0.1408,
+      "summary": "Renewable energy comes from natural sources that replenish over time. Solar energy uses sunlight to generate electricity, while wind energy converts movement of air into electrical power. Hydropower uses flowing water, and geothermal energy uses heat from beneath Earth's surface."
+    },
+    {
+      "topic": "Renewable Energy Technologies",
+      "model": "BART",
+      "preset": "long",
+      "elapsed_sec": 10.55,
+      "summary_words": 58,
+      "budget_expected": "60-64",
+      "in_budget": false,
+      "rouge1": 0.2472,
+      "rouge2": 0.046,
+      "rougeL": 0.1573,
+      "summary": "Renewable energy comes from natural sources that replenish over time. Solar energy uses sunlight to generate electricity, while wind energy converts the movement of air into electrical power. Hydropower uses flowing water, and geothermal energy uses heat from beneath Earth's surface. These technologies can reduce dependence on fossil fuels, although their costs, infrastructure requirements, and environmental effects vary."
+    },
+    {
+      "topic": "Renewable Energy Technologies",
+      "model": "PEGASUS",
+      "preset": "short",
+      "elapsed_sec": 8.82,
+      "summary_words": 33,
+      "budget_expected": "20-36",
+      "in_budget": true,
+      "rouge1": 0.1875,
+      "rouge2": 0.0323,
+      "rougeL": 0.0938,
+      "summary": "Solar energy uses sunlight to generate electricity, while wind energy converts the movement of air into electrical power . Hydropower uses flowing water, and geothermal energy uses heat from beneath Earth's surface ."
+    },
+    {
+      "topic": "Renewable Energy Technologies",
+      "model": "PEGASUS",
+      "preset": "medium",
+      "elapsed_sec": 10.16,
+      "summary_words": 37,
+      "budget_expected": "36-48",
+      "in_budget": true,
+      "rouge1": 0.2353,
+      "rouge2": 0.0606,
+      "rougeL": 0.1471,
+      "summary": "Rapid manufacturing innovation has lowered solar and wind capital expenditures by more than 70% over the last decade . These technologies can reduce dependence on fossil fuels, although their costs, infrastructure requirements, and environmental effects vary ."
+    },
+    {
+      "topic": "Renewable Energy Technologies",
+      "model": "PEGASUS",
+      "preset": "long",
+      "elapsed_sec": 16.49,
+      "summary_words": 60,
+      "budget_expected": "60-64",
+      "in_budget": true,
+      "rouge1": 0.2198,
+      "rouge2": 0.0674,
+      "rougeL": 0.1099,
+      "summary": "Rapid manufacturing innovation has lowered solar and wind capital expenditures by more than 70% over the last decade . These technologies can reduce dependence on fossil fuels, although their costs, infrastructure requirements, and environmental effects vary. Wind energy converts the movement of air into electrical power. Hydropower uses flowing water, and geothermal energy uses heat from beneath Earth's surface ."
+    }
+  ]
+}

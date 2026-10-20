@@ -84,7 +84,29 @@ Note: the dev server does not proxy to Flask by default; rebuild or run Flask al
 | `pegasus` | `google/pegasus-cnn_dailymail` | Abstractive transformer (downloads on first use). |
 | `bart` | `facebook/bart-large-cnn` | Abstractive transformer (downloads on first use). |
 
-BART and PEGASUS require `torch` and `transformers`. CUDA is used automatically when available.
+BART and PEGASUS require `torch` and `transformers`.
+
+### Hardware Acceleration (GPU & CPU Support)
+
+The application automatically adapts to your system's hardware configuration:
+- **CUDA GPU Available:** Transformer models (BART, PEGASUS, DeBERTa-v3 NLI, and Sentence-Transformers) automatically execute on GPU using `torch.inference_mode()` and mixed-precision `torch.autocast(device_type="cuda")` for accelerated inference.
+- **No GPU (CPU-Only):** If no CUDA-capable GPU is installed or PyTorch is running a CPU build, the system automatically runs on CPU with multi-threading optimization (`torch.set_num_threads`).
+- **Resilient Fallback:** If a GPU runs out of VRAM (OutOfMemory error) during long-document chunking or heavy batch inference, the system automatically catches the exception, clears the GPU memory cache, and gracefully falls back to CPU execution without failing the request.
+- **Force CPU Mode (Optional):** To force CPU execution even on systems with GPUs (e.g., for benchmarking or testing), set the environment variable:
+  ```bash
+  # Windows PowerShell
+  $env:FORCE_CPU="1"
+
+  # Linux / macOS
+  export FORCE_CPU=1
+  ```
+
+### 100% Offline Capability (Air-Gapped / Presentation Ready)
+
+The application is engineered to work completely offline without requiring an active internet connection:
+- **Zero External Pings:** The system automatically configures `HF_HUB_OFFLINE=1` and `TRANSFORMERS_OFFLINE=1`, preventing Hugging Face from sending background network requests or checking remote repositories.
+- **Local Cache Priority:** All transformer models (`facebook/bart-large-cnn`, `google/pegasus-cnn_dailymail`, `cross-encoder/nli-deberta-v3-base`, and `sentence-transformers/all-MiniLM-L6-v2`) are loaded with `local_files_only=True` via [`load_pretrained_safe`](file:///c:/Users/sulta/Desktop/AI_Hallucination-transformer-hallucination-v2/AI_Hallucination-transformer-hallucination-v2/backend/device_utils.py#L110).
+- **Self-Contained Frontend:** Compiled assets are served locally from `static/dist/`, with zero reliance on external CDNs or online tracking scripts. System font fallbacks ensure crisp typography even when disconnected from Google Fonts.
 
 ## Train The Supervised Extractive Model
 
