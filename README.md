@@ -61,11 +61,25 @@ cd ..
 
 ### 3. Start the server
 
+#### Option A: Flask + React Web App (Port 5000)
 ```bash
 python -m backend.app
 ```
-
 Open [http://127.0.0.1:5000](http://127.0.0.1:5000).
+
+#### Option B: Streamlit Web Dashboard (Port 8501)
+```bash
+streamlit run streamlit_app.py
+# or
+python app.py
+```
+Open [http://localhost:8501](http://localhost:8501).
+
+### Streamlit Community Cloud Deployment
+1. Connect repository: `sultanpatel13/Text_summarization-with-hallucination-detection-using-transformer-models-`
+2. Set branch: `HAL-Final`
+3. Set **Main file path**: `streamlit_app.py` (or `app.py`)
+4. Click **Deploy!**
 
 ### Frontend development (optional)
 
