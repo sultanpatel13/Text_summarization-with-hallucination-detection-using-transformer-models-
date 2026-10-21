@@ -72,9 +72,22 @@ def _extract_pptx_text(data: bytes) -> str:
 
 
 def extract_text_from_upload(uploaded_file) -> tuple[str, str]:
-    filename = uploaded_file.filename or "uploaded-file"
+    filename = (
+        getattr(uploaded_file, "filename", None)
+        or getattr(uploaded_file, "name", None)
+        or "uploaded-file"
+    )
     suffix = Path(filename).suffix.lower()
-    data = uploaded_file.read()
+
+    if hasattr(uploaded_file, "getvalue"):
+        data = uploaded_file.getvalue()
+    else:
+        if hasattr(uploaded_file, "seek"):
+            try:
+                uploaded_file.seek(0)
+            except Exception:
+                pass
+        data = uploaded_file.read()
 
     if not data:
         raise ValueError("The uploaded file is empty.")
