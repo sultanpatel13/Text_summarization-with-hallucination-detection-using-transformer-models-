@@ -98,40 +98,88 @@ def configure_torch_threads():
             pass
 
 
-def configure_offline_mode():
-    """Ensure Hugging Face and Transformers operate offline by default without network calls."""
-    os.environ.setdefault("HF_HUB_OFFLINE", "1")
-    os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
+def is_strict_offline() -> bool:
+    """Check if strict offline execution is explicitly requested via environment variables."""
+    for var in ("STRICT_OFFLINE", "OFFLINE_MODE", "AIR_GAPPED"):
+        if os.environ.get(var, "").strip().lower() in {"1", "true", "yes"}:
+            return True
+    return False
 
 
-# Automatically enable offline mode on module import
-configure_offline_mode()
+def configure_offline_mode(force: bool = False):
+    """Configure Hugging Face offline environment if explicitly requested or forced.
+    By default, allows dynamic online download when models are missing from local cache
+    (e.g., Streamlit Community Cloud and fresh container deployments).
+    """
+    if force or is_strict_offline():
+        os.environ["HF_HUB_OFFLINE"] = "1"
+        os.environ["TRANSFORMERS_OFFLINE"] = "1"
+    else:
+        # Do not force offline mode by default
+        pass
+
+
+# Only activate offline mode if explicitly requested by environment
+if is_strict_offline():
+    configure_offline_mode()
 
 
 def load_pretrained_safe(loader_fn, *args, **kwargs):
-    """Attempt loading pretrained model/tokenizer offline first (local_files_only=True).
-    Falls back to standard loading if local cache is missing and internet is available.
+    """Attempt loading pretrained model/tokenizer offline from local cache first.
+    If files are not cached locally (such as on Streamlit Community Cloud), dynamically
+    downloads them from Hugging Face Hub unless strict offline mode is explicitly enabled.
     """
+    # 1. Attempt loading from local cache first (instant, zero network latency)
     try:
-        return loader_fn(*args, **kwargs, local_files_only=True)
-    except Exception as err:
-        # If strict offline requested or local_files_only failed, retry without local_files_only
-        # only if network might be available, otherwise re-raise the original error
-        if os.environ.get("STRICT_OFFLINE", "").strip().lower() in {"1", "true", "yes"}:
-            raise
+        kwargs_cached = dict(kwargs)
+        kwargs_cached["local_files_only"] = True
+        return loader_fn(*args, **kwargs_cached)
+    except TypeError:
+        # loader_fn does not accept local_files_only parameter
+        pass
+    except Exception as cache_err:
+        if is_strict_offline():
+            print(f"[ModelLoader] Offline loading failed and strict offline mode is active: {cache_err}")
+            raise cache_err
+        print(f"[ModelLoader] Model components not in local cache. Downloading from Hugging Face Hub...")
+
+    # 2. Local cache miss: dynamically download from Hugging Face Hub
+    # Temporarily remove any offline environment flags so HF Hub client can connect
+    saved_env = {}
+    for var in ("HF_HUB_OFFLINE", "TRANSFORMERS_OFFLINE"):
+        if var in os.environ:
+            saved_env[var] = os.environ.pop(var)
+
+    try:
+        kwargs_online = dict(kwargs)
+        kwargs_online["local_files_only"] = False
+        return loader_fn(*args, **kwargs_online)
+    except TypeError:
+        # If loader_fn rejects local_files_only=False, call without it
         try:
             return loader_fn(*args, **kwargs)
-        except Exception:
-            raise err
+        except Exception as retry_err:
+            raise retry_err
+    except Exception as dl_err:
+        print(f"[ModelLoader] Failed to download model from Hugging Face Hub: {dl_err}")
+        raise dl_err
+    finally:
+        # Restore environment variables
+        for var, val in saved_env.items():
+            os.environ[var] = val
 
 
 def clear_device_cache(device: str | None = None):
-    """Safely flush CUDA cache if using GPU."""
+    """Safely flush CUDA and CPU memory caches."""
+    import gc
+    gc.collect()
     if torch is None:
         return
     dev = device or get_device()
     if dev == "cuda" and torch.cuda.is_available():
         try:
             torch.cuda.empty_cache()
+            if hasattr(torch.cuda, "ipc_collect"):
+                torch.cuda.ipc_collect()
         except Exception:
             pass

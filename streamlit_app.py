@@ -254,8 +254,17 @@ def main():
             st.error("Summarizer model could not be initialized.")
             return
 
+        model_display = selected_model.upper()
+        if getattr(summarizer, "_model", None) is None:
+            with st.spinner(f"Preparing {model_display} model (downloading checkpoint on first startup, please wait)..."):
+                try:
+                    summarizer._load()
+                except Exception as e:
+                    st.error(f"Failed to initialize {model_display} model: {e}")
+                    return
+
         summary_text = ""
-        with st.spinner(f"Generating abstractive summary using {selected_model.upper()} ({selected_preset} preset)..."):
+        with st.spinner(f"Generating abstractive summary using {model_display} ({selected_preset} preset)..."):
             t0 = time.perf_counter()
             try:
                 summary_text = summarizer.summarize(cleaned_text, preset=selected_preset)
@@ -275,7 +284,8 @@ def main():
         # 3. Hallucination Detection (Optional)
         hallucination_result = None
         if enable_verification:
-            detector = get_hallucination_detector()
+            with st.spinner("Preparing Hallucination Detector (downloading NLI & retrieval models on first run)..."):
+                detector = get_hallucination_detector()
             if detector:
                 with st.spinner("Auditing factual consistency against source evidence (NLI DeBERTa-v3)..."):
                     try:

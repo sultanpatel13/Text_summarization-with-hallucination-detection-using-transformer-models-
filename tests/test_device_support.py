@@ -84,9 +84,14 @@ class TestDeviceSupport(unittest.TestCase):
         self.assertEqual(res_alias.get_json()["active_device"], data["active_device"])
 
     def test_07_offline_mode_environment(self):
-        """Verify that offline environment variables are configured."""
+        """Verify that offline environment variables are configured when requested."""
+        from backend.device_utils import configure_offline_mode
+        configure_offline_mode(force=True)
         self.assertEqual(os.environ.get("HF_HUB_OFFLINE"), "1")
         self.assertEqual(os.environ.get("TRANSFORMERS_OFFLINE"), "1")
+        # Clean up so test runner is not impacted
+        os.environ.pop("HF_HUB_OFFLINE", None)
+        os.environ.pop("TRANSFORMERS_OFFLINE", None)
 
     def test_08_load_pretrained_safe_offline(self):
         """Verify load_pretrained_safe loads cached components strictly offline."""
